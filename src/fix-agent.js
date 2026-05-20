@@ -156,29 +156,27 @@ export async function runFixAgent({ category: categoryInput = 'all', findings: a
   while (true) {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 8096,
+      max_tokens: 16000,
       tools: TOOLS,
       messages,
     });
 
     messages.push({ role: 'assistant', content: response.content });
 
-    if (response.stop_reason === 'end_turn') break;
+    const toolUseBlocks = response.content.filter(b => b.type === 'tool_use');
+    if (toolUseBlocks.length === 0) break;
 
-    if (response.stop_reason === 'tool_use') {
-      const results = [];
-      for (const block of response.content) {
-        if (block.type !== 'tool_use') continue;
-        console.log(`  → ${block.name}: ${JSON.stringify(block.input).slice(0, 100)}`);
-        const result = executeTool(block.name, block.input);
-        results.push({
-          type: 'tool_result',
-          tool_use_id: block.id,
-          content: JSON.stringify(result),
-        });
-      }
-      messages.push({ role: 'user', content: results });
+    const results = [];
+    for (const block of toolUseBlocks) {
+      console.log(`  → ${block.name}: ${JSON.stringify(block.input).slice(0, 100)}`);
+      const result = executeTool(block.name, block.input);
+      results.push({
+        type: 'tool_result',
+        tool_use_id: block.id,
+        content: JSON.stringify(result),
+      });
     }
+    messages.push({ role: 'user', content: results });
   }
 
   console.log('Done.');
