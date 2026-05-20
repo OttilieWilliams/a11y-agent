@@ -45,6 +45,7 @@ function executeTool(name, input) {
     case 'write_file': {
       const safe = safePath(input.path);
       if (!safe) return { error: 'Path must be within the project directory.' };
+      if (typeof input.content !== 'string') return { error: 'content must be a string.' };
       writeFileSync(safe, input.content, 'utf8');
       return { success: true };
     }
@@ -156,7 +157,7 @@ export async function runFixAgent({ category: categoryInput = 'all', findings: a
   while (true) {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 16000,
+      max_tokens: 32000,
       tools: TOOLS,
       messages,
     });
