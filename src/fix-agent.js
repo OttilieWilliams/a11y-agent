@@ -6,6 +6,8 @@ import { resolveCategory } from './audit.js';
 
 const PROJECT_ROOT = resolve(process.cwd());
 
+export { parseCmd };
+
 export function safePath(inputPath, root = PROJECT_ROOT) {
   const resolved = resolve(root, inputPath);
   if (resolved !== root && !resolved.startsWith(root + '/')) {
@@ -30,6 +32,28 @@ function listFiles(dir) {
 
 const ALLOWED_GIT_SUBCOMMANDS = ['add', 'commit', 'push'];
 
+function parseCmd(cmdStr) {
+  const parts = [];
+  let current = '';
+  let inQuote = false;
+  let quoteChar = '';
+  for (const char of cmdStr.trim()) {
+    if (inQuote) {
+      if (char === quoteChar) inQuote = false;
+      else current += char;
+    } else if (char === '"' || char === "'") {
+      inQuote = true;
+      quoteChar = char;
+    } else if (char === ' ' || char === '\t') {
+      if (current) { parts.push(current); current = ''; }
+    } else {
+      current += char;
+    }
+  }
+  if (current) parts.push(current);
+  return parts;
+}
+
 function executeTool(name, input) {
   switch (name) {
     case 'list_files':
@@ -51,7 +75,7 @@ function executeTool(name, input) {
     }
 
     case 'run_command': {
-      const parts = input.cmd.trim().split(/\s+/);
+      const parts = parseCmd(input.cmd);
       if (parts[0] !== 'git' || !ALLOWED_GIT_SUBCOMMANDS.includes(parts[1])) {
         return { error: 'Only git add, git commit, and git push are permitted.' };
       }
