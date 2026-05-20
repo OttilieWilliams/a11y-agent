@@ -157,7 +157,7 @@ export async function runFixAgent({ category: categoryInput = 'all', findings: a
   while (true) {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 32000,
+      max_tokens: 16000,
       tools: TOOLS,
       messages,
     });
