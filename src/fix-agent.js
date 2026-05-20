@@ -6,9 +6,9 @@ import { resolveCategory } from './audit.js';
 
 const PROJECT_ROOT = resolve(process.cwd());
 
-function safePath(inputPath) {
-  const resolved = resolve(PROJECT_ROOT, inputPath);
-  if (resolved !== PROJECT_ROOT && !resolved.startsWith(PROJECT_ROOT + '/')) {
+export function safePath(inputPath, root = PROJECT_ROOT) {
+  const resolved = resolve(root, inputPath);
+  if (resolved !== root && !resolved.startsWith(root + '/')) {
     return null;
   }
   return resolved;

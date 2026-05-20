@@ -33,6 +33,7 @@ function loadConfig() {
     wcag: config.wcag ?? 'AA',
     mode: config.mode ?? 'all',
     aliases: { ...ALIASES, ...(config.aliases ?? {}) },
+    extraRules: config.extraRules ?? [],
   };
 }
 
@@ -76,9 +77,10 @@ export async function runAudit({ writeBaseline = false, silent = false } = {}) {
 
       const standard = config.wcag === 'AAA' ? ['wcag2a', 'wcag2aa', 'wcag2aaa'] :
                        config.wcag === 'AA'  ? ['wcag2a', 'wcag2aa'] : ['wcag2a'];
+      const tags = [...standard, ...config.extraRules];
 
       const results = await new AxeBuilder({ page })
-        .withTags(standard)
+        .withTags(tags)
         .analyze();
 
       const findings = categorise(results.violations).map(f => ({ ...f, path }));

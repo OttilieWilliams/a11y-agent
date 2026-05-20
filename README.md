@@ -62,6 +62,7 @@ That's it. Open a PR and the audit runs automatically.
 | `paths` | `["/"]` | URL paths to audit. |
 | `wcag` | `"AA"` | WCAG conformance level: `"A"`, `"AA"`, or `"AAA"`. |
 | `mode` | `"all"` | `"all"` reports every violation. `"new-only"` reports only violations not in the baseline (see below). |
+| `extraRules` | `[]` | Additional axe-core tag names to include, e.g. `["best-practice"]` for checks beyond WCAG. |
 | `aliases` | — | Custom shorthand names for axe categories (see below). |
 
 ## Commands
