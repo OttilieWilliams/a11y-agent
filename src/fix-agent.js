@@ -143,7 +143,7 @@ export async function runFixAgent({ category: categoryInput = 'all', findings: a
     'Steps:',
     '1. Explore the project with list_files, then read relevant source files.',
     '2. Apply fixes with write_file — one file at a time, minimal changes only.',
-    '3. When all fixes are done: run "git add -A", then',
+    '3. When all fixes are done: run "git add" with only the specific files you modified (not git add -A), then',
     `   "git commit -m \\"fix(a11y): fix ${categoryInput} violations [a11y-agent]\\"", then`,
     '   "git push".',
   ].filter(Boolean).join('\n');
